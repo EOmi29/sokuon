@@ -4,94 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ちいさい「っ」のならべかえクイズ</title>
-    
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f0f8ff;
-            text-align: center;
-            padding: 20px;
-            margin: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
+        body { font-family: Arial, sans-serif; background-color: #f0f8ff; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         h1 { color: #333; font-size: 24px; }
         .question-text { font-size: 18px; color: #666; margin-bottom: 20px; }
-        
-        /* 文字カードの並ぶエリア */
-        #sortable-area {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 30px 0;
-            min-height: 80px;
-        }
-        /* 1文字ずつの丸四角カード */
-        .char-card {
-            width: 60px;
-            height: 60px;
-            background-color: #ffe4e1;
-            border: 3px solid #ffb6c1;
-            border-radius: 15px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #d11a2a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: grab;
-            user-select: none;
-            transition: transform 0.2s;
-        }
-        /* 「っ」だけ色を変えて目立たせる */
-        .char-card.sokuon {
-            background-color: #e0ffff;
-            border-color: #00ced1;
-            color: #008b8b;
-        }
-        /* ドラッグ中のアニメーション用 */
-        .sortable-ghost {
-            opacity: 0.4;
-        }
-
-        /* ボタン類のスタイル */
-        button {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 5px;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #45a049; }
+        #sortable-area { display: flex; justify-content: center; gap: 15px; margin: 30px 0; min-height: 80px; }
+        .char-card { width: 60px; height: 60px; background-color: #ffe4e1; border: 3px solid #ffb6c1; border-radius: 15px; font-size: 28px; font-weight: bold; color: #d11a2a; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; }
+        .char-card.sokuon { background-color: #e0ffff; border-color: #00ced1; color: #008b8b; }
+        .sortable-ghost { opacity: 0.4; }
+        button { background-color: #4caf50; color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 5px; }
         button.listen-btn { background-color: #008cba; }
-        button.listen-btn:hover { background-color: #007ba7; }
-
-        /* 結果表示 */
-        #result-message {
-            font-size: 32px;
-            font-weight: bold;
-            margin-top: 20px;
-            height: 45px;
-        }
+        .back-btn { background-color: #888; font-size: 14px; padding: 8px 20px; border-radius: 15px; text-decoration: none; color: white; display: inline-block; margin-bottom: 20px; }
+        #result-message { font-size: 32px; font-weight: bold; margin-top: 20px; height: 45px; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <a href="index.html" class="back-btn">← メニューにもどる</a>
     <h1>ちいさい「っ」は どこに入る？</h1>
     <p class="question-text">カードをながおしして、ただしい ばしょに うごかそう！</p>
 
@@ -106,80 +38,72 @@
 </div>
 
 <script>
-    // 将来的にはエクセルから変換したデータをここに読み込ませます
-    // 今回は仮データとして1問目をセットしています
-    const currentQuestion = {
-        correct: "コロッケ",
-        display: ["コ", "ロ", "ケ", "ッ"] 
-    };
-
+    const currentQuestion = { correct: "コロッケ", display: ["コ", "ロ", "ケ", "ッ"] };
     const sortableArea = document.getElementById('sortable-area');
     const resultMessage = document.getElementById('result-message');
 
-    // 1. 画面の初期化（文字カードを作成して並べる）
     function initGame() {
         sortableArea.innerHTML = '';
         resultMessage.textContent = '';
-        
         currentQuestion.display.forEach(char => {
             const card = document.createElement('div');
             card.textContent = char;
             card.classList.add('char-card');
-            
-            // 「っ」または「ッ」の場合は見た目の色を変えるクラスを付与
-            if (char === 'っ' || char === 'ッ') {
-                card.classList.add('sokuon');
-            }
+            if (char === 'っ' || char === 'ッ') { card.classList.add('sokuon'); }
             sortableArea.appendChild(card);
         });
-
-        // SortableJSを有効化（iPhoneのような並び替えと、スッとずれるアニメーション）
-        new Sortable(sortableArea, {
-            animation: 200, // ずれるアニメーションの速度（ミリ秒）
-            ghostClass: 'sortable-ghost',
-            chosenClass: 'sortable-chosen'
-        });
+        new Sortable(sortableArea, { animation: 200, ghostClass: 'sortable-ghost' });
     }
 
-    // 2. 現在の並び順のテキストを取得する関数
     function getCurrentText() {
         const cards = sortableArea.querySelectorAll('.char-card');
         let text = '';
-        cards.forEach(card => {
-            text += card.textContent;
-        });
+        cards.forEach(card => { text += card.textContent; });
         return text;
     }
 
-    // 3. 「おとをきく」ボタン：現在の並び順の通りに発音する
+    // 聞き取りやすい日本語の声を自動で選ぶ関数
+    function getBestJapaneseVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        // Googleの日本語、Microsoftの日本語、AppleのKyokoなど、きれいに聞こえる声を優先的に探す
+        const targetVoices = ["Google", "Microsoft", "Ichiro", "Ayumi", "Kyoko", "Otoya", "Haruka"];
+        for (let target of targetVoices) {
+            const found = voices.find(v => v.lang.includes("ja") && v.name.includes(target));
+            if (found) return found;
+        }
+        return voices.find(v => v.lang.includes("ja")); // 見つからなければ普通の日本語
+    }
+
     function playCurrentSound() {
         const text = getCurrentText();
         
-        // 音声合成の設定
-        const uttr = new SpeechSynthesisUtterance(text);
-        uttr.lang = 'ja-JP';
-        uttr.rate = 0.75; // 違いが分かりやすいように少しゆっくり再生
+        // 【頭切れ防止】スピーカーが立ち上がる時間を稼ぐため、読点「、」を頭につける
+        const uttr = new SpeechSynthesisUtterance("、" + text);
         
-        window.speechSynthesis.cancel(); // 連続で押されたときに前の音声を止める
+        uttr.lang = 'ja-JP';
+        uttr.rate = 0.9; // 【速度変更】0.9倍速に設定
+
+        const bestVoice = getBestJapaneseVoice();
+        if (bestVoice) uttr.voice = bestVoice; // 【声の変更】高品質な声を設定
+
+        window.speechSynthesis.cancel();
         window.speechSynthesis.speak(uttr);
     }
 
-    // 4. 「まるつけ」ボタン：正誤判定
     function checkAnswer() {
-        const userText = getCurrentText();
-        
-        if (userText === currentQuestion.correct) {
-            resultMessage.style.color = '#ff4500'; // オレンジ赤（丸用）
+        if (getCurrentText() === currentQuestion.correct) {
+            resultMessage.style.color = '#ff4500';
             resultMessage.textContent = '⭕️ せいかい！';
         } else {
-            resultMessage.style.color = '#1e90ff'; // 青（バツ用）
+            resultMessage.style.color = '#1e90ff';
             resultMessage.textContent = '❌ ざんねん！もういちど';
         }
     }
 
-    // ページが開いたときにゲームを開始
+    // 音声リストが読み込まれるのを待つための処理（ブラウザ対策）
+    window.speechSynthesis.onvoiceschanged = () => {};
+
     initGame();
 </script>
-
 </body>
 </html>
