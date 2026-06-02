@@ -12,12 +12,12 @@
         .progress-text { font-size: 16px; color: #888; margin-bottom: 5px; }
         .question-text { font-size: 18px; color: #666; margin-bottom: 20px; }
         #sortable-area { display: flex; justify-content: center; gap: 15px; margin: 30px 0; min-height: 80px; }
-        .char-card { width: 60px; height: 60px; background-color: #ffe4e1; border: 3px solid #ffb6c1; border-radius: 15px; font-size: 28px; font-weight: bold; color: #d11a2a; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; }
+        .char-card { width: 60px; height: 60px; background-color: #ffe4e1; border: 3px solid #ffb6c1; border-radius: 15px; font-size: 28px; font-weight: bold; color: #d11a2a; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; -webkit-user-select: none; }
         .char-card.sokuon { background-color: #e0ffff; border-color: #00ced1; color: #008b8b; }
         .sortable-ghost { opacity: 0.4; }
-        button { background-color: #4caf50; color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 5px; }
+        button { background-color: #4caf50; color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 5px; -webkit-tap-highlight-color: transparent; }
         button.listen-btn { background-color: #008cba; }
-        button.next-btn { background-color: #ff9f43; display: none; } /* 初期状態は非表示 */
+        button.next-btn { background-color: #ff9f43; display: none; }
         .back-btn { background-color: #888; font-size: 14px; padding: 8px 20px; border-radius: 15px; text-decoration: none; color: white; display: inline-block; margin-bottom: 20px; }
         #result-message { font-size: 32px; font-weight: bold; margin-top: 20px; height: 45px; }
     </style>
@@ -44,9 +44,10 @@
 </div>
 
 <script>
-    let questions = [];      // JSONから読み込んだ問題リストを入れる配列
-    let currentIndex = 0;    // いま何問目か（0からスタート）
-    let isCorrected = false; // 正解したあとの連続お手つきを防ぐフラグ
+    let questions = [];      
+    let currentIndex = 0;    
+    let isCorrected = false; 
+    let sortableInstance = null; // ドラッグ＆ドロップの機能を管理する変数
 
     const sortableArea = document.getElementById('sortable-area');
     const resultMessage = document.getElementById('result-message');
@@ -57,7 +58,6 @@
     // 1. 外部の sokuon.json ファイルを読み込む
     async function loadQuestions() {
         try {
-            // 同一フォルダにある sokuon.json を取得
             const response = await fetch('sokuon.json');
             questions = await response.json();
             initGame();
@@ -71,21 +71,22 @@
     function initGame() {
         if (questions.length === 0) return;
 
+        // 前の問題のドラッグ＆ドロップ機能を一度リセット（これがないと動かなくなります）
+        if (sortableInstance) {
+            sortableInstance.destroy();
+            sortableInstance = null;
+        }
+
         sortableArea.innerHTML = '';
         resultMessage.textContent = '';
         isCorrected = false;
         
-        // ボタンの表示リセット
         checkBtn.style.display = 'inline-block';
         nextBtn.style.display = 'none';
 
-        // 現在の問題データを取得
         const currentQuestion = questions[currentIndex];
-        
-        // 何問目かを表示（例: 1 / 12 問目）
         progressText.textContent = `${currentIndex + 1} / ${questions.length} もんめ`;
 
-        // カードを並べる
         currentQuestion.display.forEach(char => {
             const card = document.createElement('div');
             card.textContent = char;
@@ -94,8 +95,13 @@
             sortableArea.appendChild(card);
         });
 
-        // ドラッグ＆ドロップの有効化
-        new Sortable(sortableArea, { animation: 200, ghostClass: 'sortable-ghost' });
+        // ⭐ 新しい問題に対して、並び替え機能をかけ直す
+        sortableInstance = new Sortable(sortableArea, { 
+            animation: 200, 
+            ghostClass: 'sortable-ghost',
+            delay: 100,      // スマホでのスクロール誤動作防止用の長押し（0.1秒）
+            delayOnTouchOnly: true
+        });
     }
 
     // 3. 現在の並び順を取得
@@ -121,22 +127,18 @@
     function playCurrentSound() {
         const text = getCurrentText();
         window.speechSynthesis.cancel();
-
         const bestVoice = getBestJapaneseVoice();
 
-        // 頭切れ対策：無音を流す
         const wakeUpUttr = new SpeechSynthesisUtterance("　");
         wakeUpUttr.lang = 'ja-JP';
         wakeUpUttr.volume = 0.001; 
         if (bestVoice) wakeUpUttr.voice = bestVoice;
         window.speechSynthesis.speak(wakeUpUttr);
 
-        // 本番の再生
         const uttr = new SpeechSynthesisUtterance("、、、" + text);
         uttr.lang = 'ja-JP';
         uttr.rate = 0.9; 
         if (bestVoice) uttr.voice = bestVoice;
-
         window.speechSynthesis.speak(uttr);
     }
 
@@ -151,8 +153,6 @@
             resultMessage.style.color = '#ff4500';
             resultMessage.textContent = '⭕️ せいかい！';
             isCorrected = true;
-            
-            // まるつけボタンを隠して「つぎへ」ボタンを出す
             checkBtn.style.display = 'none';
             nextBtn.style.display = 'inline-block';
         } else {
@@ -163,13 +163,10 @@
 
     // 7. つぎへボタン
     function nextQuestion() {
-        currentIndex++; // 次の問題番号に進める
-        
-        // まだ問題が残っている場合
+        currentIndex++; 
         if (currentIndex < questions.length) {
             initGame();
         } else {
-            // すべての問題が終わった場合
             sortableArea.innerHTML = '';
             resultMessage.style.color = '#ff6b81';
             resultMessage.textContent = '🎉 ぜんぶクリア！おめでとう！';
@@ -180,8 +177,6 @@
     }
 
     window.speechSynthesis.onvoiceschanged = () => {};
-    
-    // 最初にファイルを読み込む
     loadQuestions();
 </script>
 </body>
