@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "textBefore": "おか",
+    "textAfter": "さん",
+    "hintVowel": "あ",
+    "correctVowel": "あ"
+  },
+  {
+    "id": 2,
+    "textBefore": "おと",
+    "textAfter": "さん",
+    "hintVowel": "お",
+    "correctVowel": "う"
+  },
+  {
+    "id": 3,
+    "textBefore": "とお",
+    "textAfter": "い",
+    "hintVowel": "お",
+    "correctVowel": "お"
+  }
+]
