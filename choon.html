@@ -76,15 +76,15 @@
     const nextBtn = document.getElementById('next-btn');
     const choiceButtons = document.querySelectorAll('.choice-btn');
 
-    // 1. 外部の choun.json ファイルを読み込む
+    // 1. 外部の choon.json ファイルを読み込む
     async function loadQuestions() {
         try {
-            const response = await fetch('choun.json');
+            const response = await fetch('choon.json');
             questions = await response.json();
             initGame();
         } catch (error) {
             console.error("データの読み込みに失敗しました:", error);
-            document.querySelector('.word-display').innerHTML = "<p style='color:red; font-size:16px;'>単語リスト（choun.json）がみつからないか、エラーがあります。</p>";
+            document.querySelector('.word-display').innerHTML = "<p style='color:red; font-size:16px;'>単語リスト（choon.json）がみつからないか、エラーがあります。</p>";
         }
     }
 
