@@ -1,23 +1,15 @@
 [
-  {
-    "id": 1,
-    "textBefore": "おか",
-    "textAfter": "さん",
-    "hintVowel": "あ",
-    "correctVowel": "あ"
-  },
-  {
-    "id": 2,
-    "textBefore": "おと",
-    "textAfter": "さん",
-    "hintVowel": "お",
-    "correctVowel": "う"
-  },
-  {
-    "id": 3,
-    "textBefore": "とお",
-    "textAfter": "い",
-    "hintVowel": "お",
-    "correctVowel": "お"
-  }
+{"id":1,"textBefore":"おか","correctVowel": "あ","textAfter": "さん","hintVowel": "あ"},	
+{"id":2,"textBefore":"おば","correctVowel": "あ","textAfter": "さん","hintVowel": "あ"},	
+{"id":3,"textBefore":"おと","correctVowel": "う","textAfter": "さん","hintVowel": "お"},	
+{"id":4,"textBefore":"おね","correctVowel": "え","textAfter": "さん","hintVowel": "え"},	
+{"id":5,"textBefore":"とけ","correctVowel": "い","textAfter": "","hintVowel": "え"},	
+{"id":6,"textBefore":"と","correctVowel": "う","textAfter": "ふ","hintVowel": "お"},	
+{"id":7,"textBefore":"れ","correctVowel": "い","textAfter": "ぞうこ","hintVowel": "え"},	
+{"id":8,"textBefore":"れいぞ","correctVowel": "う","textAfter": "こ","hintVowel": "お"},	
+{"id":9,"textBefore":"こ","correctVowel": "う","textAfter": "つうあんぜん","hintVowel": "お"},	
+{"id":10,"textBefore":"せんせ","correctVowel": "い","textAfter": "","hintVowel": "え"},	
+{"id":11,"textBefore":"お","correctVowel": "お","textAfter": "きい","hintVowel": "お"},	
+{"id":12,"textBefore":"お","correctVowel": "お","textAfter": "い","hintVowel": "お"},	
+{"id":13,"textBefore":"ち","correctVowel": "い","textAfter": "さい","hintVowel": "い"}
 ]
