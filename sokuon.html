@@ -9,6 +9,7 @@
         body { font-family: Arial, sans-serif; background-color: #f0f8ff; text-align: center; padding: 20px; margin: 0; }
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         h1 { color: #333; font-size: 24px; }
+        .progress-text { font-size: 16px; color: #888; margin-bottom: 5px; }
         .question-text { font-size: 18px; color: #666; margin-bottom: 20px; }
         #sortable-area { display: flex; justify-content: center; gap: 15px; margin: 30px 0; min-height: 80px; }
         .char-card { width: 60px; height: 60px; background-color: #ffe4e1; border: 3px solid #ffb6c1; border-radius: 15px; font-size: 28px; font-weight: bold; color: #d11a2a; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none; }
@@ -16,6 +17,7 @@
         .sortable-ghost { opacity: 0.4; }
         button { background-color: #4caf50; color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 5px; }
         button.listen-btn { background-color: #008cba; }
+        button.next-btn { background-color: #ff9f43; display: none; } /* 初期状態は非表示 */
         .back-btn { background-color: #888; font-size: 14px; padding: 8px 20px; border-radius: 15px; text-decoration: none; color: white; display: inline-block; margin-bottom: 20px; }
         #result-message { font-size: 32px; font-weight: bold; margin-top: 20px; height: 45px; }
     </style>
@@ -24,27 +26,66 @@
 
 <div class="container">
     <a href="index.html" class="back-btn">← メニューにもどる</a>
-    <h1>ちいさい「っ’」は どこに入る？</h1>
+    
+    <div id="progress" class="progress-text">---</div>
+    
+    <h1>ちいさい「っ」は どこに入る？</h1>
     <p class="question-text">カードをながおしして、ただしい ばしょに うごかそう！</p>
 
     <div id="sortable-area"></div>
 
     <div>
         <button class="listen-btn" onclick="playCurrentSound()">🔊 おとをきく</button>
-        <button onclick="checkAnswer()">まるつけ</button>
+        <button id="check-btn" onclick="checkAnswer()">まるつけ</button>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">つぎへ ➡️</button>
     </div>
 
     <div id="result-message"></div>
 </div>
 
 <script>
-    const currentQuestion = { correct: "コロッケ", display: ["コ", "ロ", "ケ", "ッ"] };
+    let questions = [];      // JSONから読み込んだ問題リストを入れる配列
+    let currentIndex = 0;    // いま何問目か（0からスタート）
+    let isCorrected = false; // 正解したあとの連続お手つきを防ぐフラグ
+
     const sortableArea = document.getElementById('sortable-area');
     const resultMessage = document.getElementById('result-message');
+    const progressText = document.getElementById('progress');
+    const checkBtn = document.getElementById('check-btn');
+    const nextBtn = document.getElementById('next-btn');
 
+    // 1. 外部の sokuon.json ファイルを読み込む
+    async function loadQuestions() {
+        try {
+            // 同一フォルダにある sokuon.json を取得
+            const response = await fetch('sokuon.json');
+            questions = await response.json();
+            initGame();
+        } catch (error) {
+            console.error("データの読み込みに失敗しました:", error);
+            sortableArea.innerHTML = "<p style='color:red;'>単語リスト（sokuon.json）がみつからないか、エラーがあります。</p>";
+        }
+    }
+
+    // 2. クイズ画面の初期化（指定された問題を表示する）
     function initGame() {
+        if (questions.length === 0) return;
+
         sortableArea.innerHTML = '';
         resultMessage.textContent = '';
+        isCorrected = false;
+        
+        // ボタンの表示リセット
+        checkBtn.style.display = 'inline-block';
+        nextBtn.style.display = 'none';
+
+        // 現在の問題データを取得
+        const currentQuestion = questions[currentIndex];
+        
+        // 何問目かを表示（例: 1 / 12 問目）
+        progressText.textContent = `${currentIndex + 1} / ${questions.length} もんめ`;
+
+        // カードを並べる
         currentQuestion.display.forEach(char => {
             const card = document.createElement('div');
             card.textContent = char;
@@ -52,9 +93,12 @@
             if (char === 'っ' || char === 'ッ') { card.classList.add('sokuon'); }
             sortableArea.appendChild(card);
         });
+
+        // ドラッグ＆ドロップの有効化
         new Sortable(sortableArea, { animation: 200, ghostClass: 'sortable-ghost' });
     }
 
+    // 3. 現在の並び順を取得
     function getCurrentText() {
         const cards = sortableArea.querySelectorAll('.char-card');
         let text = '';
@@ -62,6 +106,7 @@
         return text;
     }
 
+    // 4. 音声をきれいに出すための関数
     function getBestJapaneseVoice() {
         const voices = window.speechSynthesis.getVoices();
         const targetVoices = ["Google", "Microsoft", "Ichiro", "Ayumi", "Kyoko", "Otoya", "Haruka"];
@@ -72,20 +117,21 @@
         return voices.find(v => v.lang.includes("ja"));
     }
 
+    // 5. 🔊 おとをきくボタン
     function playCurrentSound() {
         const text = getCurrentText();
-        window.speechSynthesis.cancel(); // 一度すべての音声をクリア
+        window.speechSynthesis.cancel();
 
         const bestVoice = getBestJapaneseVoice();
 
-        // 【新・頭切れ対策①】音量ゼロ（または超小音）のダミー無音を一瞬流してスピーカーを起動させる
+        // 頭切れ対策：無音を流す
         const wakeUpUttr = new SpeechSynthesisUtterance("　");
         wakeUpUttr.lang = 'ja-JP';
         wakeUpUttr.volume = 0.001; 
         if (bestVoice) wakeUpUttr.voice = bestVoice;
         window.speechSynthesis.speak(wakeUpUttr);
 
-        // 【新・頭切れ対策②】ダミー起動の直後、さらに十分な「タメ（、、、）」を挟んで本番を再生
+        // 本番の再生
         const uttr = new SpeechSynthesisUtterance("、、、" + text);
         uttr.lang = 'ja-JP';
         uttr.rate = 0.9; 
@@ -94,18 +140,49 @@
         window.speechSynthesis.speak(uttr);
     }
 
+    // 6. まるつけボタン
     function checkAnswer() {
-        if (getCurrentText() === currentQuestion.correct) {
+        if (isCorrected) return;
+
+        const currentQuestion = questions[currentIndex];
+        const userText = getCurrentText();
+
+        if (userText === currentQuestion.correct) {
             resultMessage.style.color = '#ff4500';
             resultMessage.textContent = '⭕️ せいかい！';
+            isCorrected = true;
+            
+            // まるつけボタンを隠して「つぎへ」ボタンを出す
+            checkBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
         } else {
             resultMessage.style.color = '#1e90ff';
             resultMessage.textContent = '❌ ざんねん！もういちど';
         }
     }
 
+    // 7. つぎへボタン
+    function nextQuestion() {
+        currentIndex++; // 次の問題番号に進める
+        
+        // まだ問題が残っている場合
+        if (currentIndex < questions.length) {
+            initGame();
+        } else {
+            // すべての問題が終わった場合
+            sortableArea.innerHTML = '';
+            resultMessage.style.color = '#ff6b81';
+            resultMessage.textContent = '🎉 ぜんぶクリア！おめでとう！';
+            progressText.textContent = 'ゲーム終了';
+            checkBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+    }
+
     window.speechSynthesis.onvoiceschanged = () => {};
-    initGame();
+    
+    // 最初にファイルを読み込む
+    loadQuestions();
 </script>
 </body>
 </html>
