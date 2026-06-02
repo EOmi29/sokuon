@@ -24,7 +24,7 @@
 
 <div class="container">
     <a href="index.html" class="back-btn">← メニューにもどる</a>
-    <h1>ちいさい「っ」は どこに入る？</h1>
+    <h1>ちいさい「っ’」は どこに入る？</h1>
     <p class="question-text">カードをながおしして、ただしい ばしょに うごかそう！</p>
 
     <div id="sortable-area"></div>
@@ -62,31 +62,35 @@
         return text;
     }
 
-    // 聞き取りやすい日本語の声を自動で選ぶ関数
     function getBestJapaneseVoice() {
         const voices = window.speechSynthesis.getVoices();
-        // Googleの日本語、Microsoftの日本語、AppleのKyokoなど、きれいに聞こえる声を優先的に探す
         const targetVoices = ["Google", "Microsoft", "Ichiro", "Ayumi", "Kyoko", "Otoya", "Haruka"];
         for (let target of targetVoices) {
             const found = voices.find(v => v.lang.includes("ja") && v.name.includes(target));
             if (found) return found;
         }
-        return voices.find(v => v.lang.includes("ja")); // 見つからなければ普通の日本語
+        return voices.find(v => v.lang.includes("ja"));
     }
 
     function playCurrentSound() {
         const text = getCurrentText();
-        
-        // 【頭切れ防止】スピーカーが立ち上がる時間を稼ぐため、読点「、」を頭につける
-        const uttr = new SpeechSynthesisUtterance("、" + text);
-        
-        uttr.lang = 'ja-JP';
-        uttr.rate = 0.9; // 【速度変更】0.9倍速に設定
+        window.speechSynthesis.cancel(); // 一度すべての音声をクリア
 
         const bestVoice = getBestJapaneseVoice();
-        if (bestVoice) uttr.voice = bestVoice; // 【声の変更】高品質な声を設定
 
-        window.speechSynthesis.cancel();
+        // 【新・頭切れ対策①】音量ゼロ（または超小音）のダミー無音を一瞬流してスピーカーを起動させる
+        const wakeUpUttr = new SpeechSynthesisUtterance("　");
+        wakeUpUttr.lang = 'ja-JP';
+        wakeUpUttr.volume = 0.001; 
+        if (bestVoice) wakeUpUttr.voice = bestVoice;
+        window.speechSynthesis.speak(wakeUpUttr);
+
+        // 【新・頭切れ対策②】ダミー起動の直後、さらに十分な「タメ（、、、）」を挟んで本番を再生
+        const uttr = new SpeechSynthesisUtterance("、、、" + text);
+        uttr.lang = 'ja-JP';
+        uttr.rate = 0.9; 
+        if (bestVoice) uttr.voice = bestVoice;
+
         window.speechSynthesis.speak(uttr);
     }
 
@@ -100,9 +104,7 @@
         }
     }
 
-    // 音声リストが読み込まれるのを待つための処理（ブラウザ対策）
     window.speechSynthesis.onvoiceschanged = () => {};
-
     initGame();
 </script>
 </body>
