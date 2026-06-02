@@ -91,16 +91,24 @@
         if (!selectedLetter) { alert("まずは「あいうえお」から文字をえらんでね！"); return; }
 
         const fullText = currentQuestion.textBefore + selectedLetter + currentQuestion.textAfter;
-
-        // 【頭切れ防止】読点「、」を最初につけて喋り出しの消えを防止
-        const uttr = new SpeechSynthesisUtterance("、" + fullText);
-        uttr.lang = 'ja-JP';
-        uttr.rate = 0.9; // 【速度変更】0.9倍速に設定
+        window.speechSynthesis.cancel(); // 一度すべての音声をクリア
 
         const bestVoice = getBestJapaneseVoice();
-        if (bestVoice) uttr.voice = bestVoice; // 【声の変更】高品質な声を設定
 
-        window.speechSynthesis.cancel();
+        // 【新・頭切れ対策①】音量ゼロのダミー無音を一瞬流してスピーカーを強制起動
+        const wakeUpUttr = new SpeechSynthesisUtterance("　");
+        wakeUpUttr.lang = 'ja-JP';
+        wakeUpUttr.volume = 0.001; 
+        if (bestVoice) wakeUpUttr.voice = bestVoice;
+        window.speechSynthesis.speak(wakeUpUttr);
+
+        // 【新・頭切れ対策②】読点を「、、、」に増やし、確実に立ち上がった後に本番を再生
+        const uttr = new SpeechSynthesisUtterance("、、、" + fullText);
+        uttr.lang = 'ja-JP';
+        uttr.rate = 0.9; 
+
+        if (bestVoice) uttr.voice = bestVoice;
+
         window.speechSynthesis.speak(uttr);
     }
 
