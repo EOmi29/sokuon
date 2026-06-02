@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>のばす音（長音）クイズ</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fff9e6; /* 少し温かみのある黄色系の背景 */
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; font-size: 24px; }
+        .question-text { font-size: 18px; color: #666; margin-bottom: 10px; }
+
+        /* 口の形のヒント表示エリア */
+        .hint-box {
+            display: inline-block;
+            background-color: #ffeb3b;
+            color: #333;
+            padding: 8px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 0 #fbc02d;
+        }
+        
+        /* 問題の単語表示エリア */
+        .word-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 40px;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+        /* 選択肢がはまる空欄の箱 */
+        .blank-box {
+            width: 70px;
+            height: 70px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff5722;
+            background-color: #fafafa;
+            transition: all 0.2s;
+        }
+        .blank-box.filled {
+            border: 3px solid #ff5722;
+            background-color: #fbe9e7;
+        }
+
+        /* 選択肢（あいうえお）のボタンエリア */
+        .choices-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+        .choice-btn {
+            width: 65px;
+            height: 65px;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #ffffff;
+            border: 3px solid #2196f3;
+            color: #2196f3;
+            border-radius: 50%; /* 丸いボタン */
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1976d2;
+            transition: all 0.1s;
+        }
+        .choice-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+        .choice-btn.selected {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        /* 操作アクションボタン */
+        .action-btns button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 5px;
+        }
+        button.listen-btn { background-color: #008cba; }
+
+        /* 結果表示 */
+        #result-message {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 20px;
+            height: 45px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>のばす音（長音）クイズ</h1>
+    <p class="question-text">ただしい 文字を えらんで、音を きいてみよう！</p>
+    
+    <div class="hint-box">👄 くちの かたち：<span id="hint-vowel"></span></div>
+
+    <div class="word-display">
+        <span id="text-before"></span>
+        <div id="blank-box" class="blank-box">？</div>
+        <span id="text-after"></span>
+    </div>
+
+    <div class="choices-area">
+        <button class="choice-btn" onclick="selectVowel('あ')">あ</button>
+        <button class="choice-btn" onclick="selectVowel('い')">い</button>
+        <button class="choice-btn" onclick="selectVowel('う')">う</button>
+        <button class="choice-btn" onclick="selectVowel('え')">え</button>
+        <button class="choice-btn" onclick="selectVowel('お')">お</button>
+    </div>
+
+    <div class="action-btns">
+        <button class="listen-btn" onclick="playCurrentSound()">🔊 おとをきく</button>
+        <button onclick="checkAnswer()">けってい</button>
+    </div>
+
+    <div id="result-message"></div>
+</div>
+
+<script>
+    // 仮のクイズデータ（通常ルール、うになるルール、例外ルールの3つのパターンが試せます）
+    // ※ 確認用。インデックスを変えてテストできます
+    const currentQuestion = {
+        textBefore: "おか", 
+        textAfter: "さん", 
+        hintVowel: "あ", 
+        correctVowel: "あ" // おかあさん
+    };
+
+    /* 別の問題パターンでテストしたい場合はここを書き換えてみてください
+    const currentQuestion = { textBefore: "おと", textAfter: "さん", hintVowel: "お", correctVowel: "う" }; // おとうさん
+    const currentQuestion = { textBefore: "とお", textAfter: "い", hintVowel: "お", correctVowel: "お" }; // とおい
+    */
+
+    let selectedLetter = ""; // ユーザーが選んだ文字
+
+    // 画面の初期化
+    function initGame() {
+        document.getElementById('hint-vowel').textContent = currentQuestion.hintVowel;
+        document.getElementById('text-before').textContent = currentQuestion.textBefore;
+        document.getElementById('text-after').textContent = currentQuestion.textAfter;
+        document.getElementById('result-message').textContent = "";
+    }
+
+    // ユーザーが「あいうえお」のどれかを押したとき
+    function selectVowel(letter) {
+        selectedLetter = letter;
+        
+        // 空欄の箱の中身を書き換える
+        const blankBox = document.getElementById('blank-box');
+        blankBox.textContent = letter;
+        blankBox.classList.add('filled');
+
+        // ボタンの選択状態の見た目をリセットして、押されたのだけ青くする
+        const buttons = document.querySelectorAll('.choice-btn');
+        buttons.forEach(btn => {
+            if (btn.textContent === letter) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+        
+        // 文字が変わったら、前回のまるばつ表示を消す
+        document.getElementById('result-message').textContent = "";
+    }
+
+    // 現在の文字で音を聴く
+    function playCurrentSound() {
+        if (!selectedLetter) {
+            alert("まずは「あいうえお」から文字をえらんでね！");
+            return;
+        }
+
+        // 前後の文字と、ユーザーが選んだ文字をがっちゃんこする（例：おか ＋ い ＋ さん）
+        const fullText = currentQuestion.textBefore + selectedLetter + currentQuestion.textAfter;
+
+        const uttr = new SpeechSynthesisUtterance(fullText);
+        uttr.lang = 'ja-JP';
+        uttr.rate = 0.75; // じっくり聞き比べられるように少しゆっくり
+
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(uttr);
+    }
+
+    // けっていボタン（正誤判定）
+    function checkAnswer() {
+        if (!selectedLetter) {
+            alert("文字をえらんでから「けってい」を押してね！");
+            return;
+        }
+
+        const resultMessage = document.getElementById('result-message');
+
+        if (selectedLetter === currentQuestion.correctVowel) {
+            resultMessage.style.color = '#ff4500';
+            resultMessage.textContent = '⭕️ せいかい！';
+        } else {
+            resultMessage.style.color = '#1e90ff';
+            resultMessage.textContent = '❌ ざんねん！ちがうおとだよ';
+        }
+    }
+
+    // ゲーム開始
+    initGame();
+</script>
+
+</body>
+</html>
