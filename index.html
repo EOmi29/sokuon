@@ -12,7 +12,7 @@ body{background:var(--bg);color:var(--fg);font-family:"UD Digi Kyokasho N-R","UD
 #game.on{align-items:stretch;justify-content:flex-start;gap:0}
 h1{font-size:44px;margin:0}
 .row{display:flex;align-items:center;gap:16px;font-size:24px}.row>span{width:150px;text-align:right}
-.seg{display:flex;gap:8px}
+.seg{display:grid;grid-template-columns:repeat(2,190px);gap:10px}
 .btn,.seg button{font:inherit;font-size:22px;padding:10px 18px;border-radius:14px;border:3px solid var(--line);background:var(--card);color:var(--fg)}
 .seg button.sel{background:var(--acc);border-color:var(--acc);color:#fff}
 .big{font-size:32px;padding:14px 40px;background:var(--acc);border-color:var(--acc);color:#fff}
@@ -33,15 +33,15 @@ body.lh .card{padding-left:0;padding-right:28px;clip-path:polygon(0 0,70% 0,100%
 #fb.on{display:flex}#fb div{font-size:150px;line-height:1}#fb small{font-size:36px}
 #fb.ok{color:var(--ok)}#fb.ng{color:var(--ng)}#fb.ng div{font-size:72px;background:var(--card);padding:8px 28px;border-radius:24px;border:4px solid var(--ng)}
 #rs{font-size:110px;font-weight:700;color:var(--acc)}#rk{font-size:56px}#rn{font-size:26px}
-#start{position:relative;overflow:auto;flex-direction:row;flex-wrap:wrap;gap:28px 64px;background:radial-gradient(circle at 18% 22%,rgba(255,170,60,.35) 0,transparent 45%),radial-gradient(circle at 85% 80%,rgba(255,100,150,.25) 0,transparent 42%)}
+#start{position:relative;overflow:auto;flex-direction:column;gap:22px;background:radial-gradient(circle at 18% 22%,rgba(255,170,60,.35) 0,transparent 45%),radial-gradient(circle at 85% 80%,rgba(255,100,150,.25) 0,transparent 42%)}
 .grp{display:flex;flex-direction:column;align-items:center;gap:16px;z-index:1}
-#ttl{font-size:50px;line-height:1.3;text-align:center;margin:0}#ttl span{display:inline-block}#ttl .q{color:var(--acc);font-size:1.5em}
+.mid{display:flex;gap:56px;align-items:center;justify-content:center;flex-wrap:wrap;z-index:1}#ttl{font-size:46px;line-height:1.3;text-align:center;margin:0;white-space:nowrap;z-index:1}#ttl span{display:inline-block}#ttl .q{color:var(--acc);font-size:1.5em}
 .cap{font-size:24px}
 .demo{position:relative;width:190px;height:216px;background:var(--card);border:4px dashed var(--line);border-radius:24px;overflow:hidden}
 .dw{position:absolute;top:14px;left:57px;writing-mode:vertical-rl;font-size:58px;font-weight:600;line-height:1.3}.da{animation:da 4s infinite}.db{opacity:0;animation:db 4s infinite}
 .ib{position:absolute;left:57px;top:69px;width:76px;height:7px;border-radius:4px;background:var(--ng);box-shadow:0 0 10px var(--ng);opacity:0;animation:dl 4s infinite}
 .mc{position:absolute;left:90px;top:47px;width:66px;height:50px;padding-left:17px;background:var(--acc);color:#fff;font-size:32px;font-weight:700;display:flex;align-items:center;justify-content:center;clip-path:polygon(0 50%,30% 0,100% 0,100% 100%,30% 100%);opacity:0;animation:dc 4s ease-in-out infinite}
-.st{display:flex;gap:18px;margin-top:10px}.st .big{font-size:36px;padding:20px 30px}#b1{background:#4dabf7;border-color:#4dabf7}
+.st{display:grid;grid-template-columns:repeat(2,190px);gap:10px;margin:10px 0 0 166px}.st .big{font-size:30px;padding:18px 0}#b1{background:#4dabf7;border-color:#4dabf7}
 @keyframes bn{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes fl{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-18px) rotate(8deg)}}
 @keyframes pu{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
@@ -50,16 +50,25 @@ body.lh .card{padding-left:0;padding-right:28px;clip-path:polygon(0 0,70% 0,100%
 @keyframes da{0%,64%{opacity:1}68%,94%{opacity:0}98%,100%{opacity:1}}
 @keyframes db{0%,64%{opacity:0}68%,94%{opacity:1}98%,100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.da,.mc,.ib{display:none}.db{opacity:1}}
+#res{flex-direction:row;gap:56px}.rr{display:flex;flex-direction:column;align-items:center;gap:16px}
+#sky{position:relative;width:300px;height:min(74vh,520px);overflow:hidden;border-radius:24px;border:4px solid var(--line);flex:none}
+#world{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,#cfeeff 0,#8fd0ff 22%,#3d8be0 45%,#1c3a7a 62%,#070a22 82%,#25104a 100%)}
+.stars{position:absolute;left:0;right:0;top:0;height:32%;background-image:radial-gradient(#fff 1.3px,transparent 1.8px),radial-gradient(#fff 1px,transparent 1.5px);background-size:53px 61px,37px 43px;background-position:0 0,17px 23px}
+#gnd{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#5db75d,#3f8f45)}
+.veh{position:absolute;left:100px;width:190px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;font-weight:700;font-size:20px;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.veh b{padding:2px 10px;border-radius:12px}.veh b.hit{background:#ffd43b;color:#333;text-shadow:none}
+#rkt{position:absolute;left:40px;bottom:calc(30% - 30px);z-index:2}#rkt .fl{opacity:0}#rkt.go .fl{opacity:1;animation:fk .12s infinite alternate}
+@keyframes fk{from{opacity:.55}to{opacity:1}}
 </style></head><body>
-<div id="start" class="scr on"><div class="grp"><h1 id="ttl"></h1><div class="cap">「っ」を ただしい ところに いれよう！</div>
-<div class="demo"><div class="dw da">きて</div><div class="dw db">き<span class="pl">っ</span>て</div><div class="ib"></div><div class="mc">っ</div></div></div>
+<div id="start" class="scr on"><h1 id="ttl"></h1>
+<div class="mid"><div class="grp"><div class="demo"><div class="dw da">きて</div><div class="dw db">き<span class="pl">っ</span>て</div><div class="ib"></div><div class="mc">っ</div></div><div class="cap">「っ」を ただしい ところに いれよう！</div></div>
 <div class="grp"><div class="row"><span>カタカナ</span><div class="seg" data-k="kata"><button data-v="0" class="sel">まだ</button><button data-v="1">ならった</button></div></div>
 <div class="row"><span>したせん</span><div class="seg" data-k="ul"><button data-v="1" class="sel">あり</button><button data-v="0">なし</button></div></div>
 <div class="row"><span>つかうて</span><div class="seg" data-k="lh"><button data-v="1">ひだりて</button><button data-v="0" class="sel">みぎて</button></div></div>
-<div class="st"><button id="b1" class="btn big">れんしゅう</button><button id="b2" class="btn big">ほんばん</button></div></div></div>
+<div class="st"><button id="b1" class="btn big">れんしゅう</button><button id="b2" class="btn big">ほんばん</button></div></div></div></div>
 <div id="game" class="scr"><div id="top"><button class="btn" id="quit">←</button><div id="barw"><div id="bar"></div></div><b id="tm"></b><b id="sc"></b><button class="btn" id="spk">🔊 きく</button><button class="btn" id="skip">とばす</button></div>
 <div id="stage"><div id="area"><div id="sent"></div><div id="fb"></div></div><div id="tray"></div></div></div>
-<div id="res" class="scr"><h1>おわり！</h1><div><span id="rs"></span> てん</div><div id="rk"></div><div id="rn"></div><button id="again" class="btn big">もういちど</button><button id="home" class="btn">はじめにもどる</button></div>
+<div id="res" class="scr"><div id="sky"><div id="world"></div><div id="rkt"><svg width='44' height='96' viewBox='0 0 44 96'><path d='M22 2C34 14 36 34 34 62H10C8 34 10 14 22 2z' fill='#f1f3f5'/><path d='M22 2C28 8 31 14 32 20H12C13 14 16 8 22 2z' fill='#ff6b6b'/><circle cx='22' cy='38' r='7' fill='#74c0fc' stroke='#495057' stroke-width='2'/><path d='M10 50L0 74l10-6zM34 50l10 24-10-6z' fill='#ff6b6b'/><g class='fl'><path d='M14 64h16l-8 30z' fill='#ffa94d'/><path d='M18 64h8l-4 18z' fill='#ffe066'/></g></svg></div></div><div class="rr"><h1>おわり！</h1><div><span id="rs"></span> てん</div><div id="rk"></div><div id="rn"></div><button id="again" class="btn big">もういちど</button><button id="home" class="btn">はじめにもどる</button></div></div>
 <div id="fl"></div><div id="ins"></div>
 <script>
 const D=[{"h": "いっき", "k": "", "s": "ぎゅうにゅうを　いっきに　のむ"}, {"h": "がっき", "k": "", "s": "おんがくしつの　がっきを　つかう"}, {"h": "かっこ", "k": "", "s": "「」は　かぎかっこと　いうよ"}, {"h": "かって", "k": "", "s": "かってに　ぼくの　えんぴつを　つかわないで"}, {"h": "かっぱ", "k": "", "s": "かわから　かっぱが　あらわれた"}, {"h": "さっかあ", "k": "サッカー", "s": "おにいさんは　さっかあが　じょうず"}, {"h": "きって", "k": "", "s": "てがみに　きってを　はります"}, {"h": "きっと", "k": "テスト", "s": "きょうの　てすとは　きっと　よいてんが　とれる"}, {"h": "こっぷ", "k": "コップ", "s": "おちゃを　こっぷに　いれる"}, {"h": "ざっし", "k": "", "s": "おもしろい　ざっしを　よむ"}, {"h": "しっぽ", "k": "", "s": "いぬの　しっぽが　ぶんぶん　ゆれる"}, {"h": "そっち", "k": "", "s": "あぶないので　そっちには　いかないで"}, {"h": "そっと", "k": "", "s": "ねている　ひとに　そっと　もうふを　かける"}, {"h": "だっこ", "k": "", "s": "あかちゃんを　だっこ　してみたい"}, {"h": "たっち", "k": "", "s": "おにに　たっちされて　つかまった"}, {"h": "にっき", "k": "", "s": "おもいでを　にっきに　かこう"}, {"h": "ねっこ", "k": "", "s": "おおきな　きは　ねっこも　おおきい"}, {"h": "がっこう", "k": "", "s": "まいにち　あるいて　がっこうに　いく"}, {"h": "ばった", "k": "", "s": "くらむらから　ばったが　とびだす"}, {"h": "ばっと", "k": "バット", "s": "やきゅうの　ばっとを　ふる"}, {"h": "はっぱ", "k": "", "s": "おおきな　はっぱで　おめんを　つくる"}, {"h": "まっか", "k": "", "s": "さむいと　かおが　まっかに　なる"}, {"h": "みっつ", "k": "", "s": "どんぐりを　みっつ　ひろいました"}, {"h": "もっと", "k": "", "s": "きゅうしょくを　もっと　たべたいな"}, {"h": "やっと", "k": "", "s": "しゅくだいが　やっと　おわったよ"}, {"h": "よっと", "k": "ヨット", "s": "うみに　よっとが　うかんでいるよ"}, {"h": "らっか", "k": "", "s": "たかい　ところから　らっかした"}, {"h": "らっこ", "k": "ラッコ", "s": "すいぞくかんで　らっこを　みた"}, {"h": "らっぱ", "k": "ラッパ", "s": "おもちゃの　らっぱを　ふく"}, {"h": "とらんぺっと", "k": "トランペット", "s": "きんいろで　ぴかぴかの　とらんぺっと"}, {"h": "いっぱい", "k": "", "s": "たべすぎて　おなかが　いっぱいになる"}, {"h": "かったあ", "k": "カッターナイフ", "s": "こうさくで　かったあないふを　つかう"}, {"h": "きっちん", "k": "キッチン", "s": "きっちんで　りょうりの　おてつだいをする"}, {"h": "くっきい", "k": "クッキー", "s": "やきたての　くっきいを　たべる"}, {"h": "こっそり", "k": "トイレ", "s": "おこさないように　こっそり　といれにいく"}, {"h": "さっぱり", "k": "", "s": "なにを　するのか　さっぱり　わからない"}, {"h": "しっぱい", "k": "", "s": "しっぱい　しても　やりなおせる"}, {"h": "すっきり", "k": "", "s": "おふろに　はいると　すっきりする"}, {"h": "すっぱい", "k": "", "s": "うめぼしは　すっぱいけれど　おいしい"}, {"h": "どっさり", "k": "", "s": "やまで　きのこが　どっさり　とれた"}, {"h": "にっぽん", "k": "", "s": "にっぽんいちの　つよい　ひとを　きめよう"}, {"h": "はっけん", "k": "", "s": "あたらしい　はっけんを　した"}, {"h": "はっしゃ", "k": "", "s": "じかんどおり　でんしゃが　はっしゃ　します"}, {"h": "びっくり", "k": "", "s": "おおきな　こえに　びっくりする"}, {"h": "ひっこし", "k": "", "s": "となりの　まちに　ひっこします"}, {"h": "ひっぱる", "k": "", "s": "ひもを　ひっぱると　ほどけます"}, {"h": "まじっく", "k": "マジック", "s": "ふしぎな　まじっくを　はじめて　みました"}, {"h": "まっさお", "k": "", "s": "きもちわるく　なると　かおが　まっさおになる"}, {"h": "まっしろ", "k": "", "s": "ゆきがふると　いちめん　まっしろに　なります"}, {"h": "まっすぐ", "k": "", "s": "このみちを　まっすぐ　すすんでください"}, {"h": "ゆったり", "k": "", "s": "このふくは　ゆったりとして　きやすいです"}, {"h": "ろけっと", "k": "ロケット", "s": "おおきな　ろけっとが　うちあげられた"}, {"h": "ろっかあ", "k": "ロッカー", "s": "にもつを　じぶんの　ろっかあに　いれる"}, {"h": "いっしゅん", "k": "", "s": "しんかんせんが　いっしゅんで　とおりすぎた"}, {"h": "かっこいい", "k": "", "s": "この　じてんしゃは　かっこいいです"}, {"h": "がっしょう", "k": "ゲロゲロ", "s": "げろげろと　かえるが　がっしょう　しています"}, {"h": "くっしょん", "k": "クッション", "s": "いえにある　くっしょんは　やわらかいです"}, {"h": "こっぺぱん", "k": "コッペパン", "s": "あしたの　きゅうしょくは　こっぺぱんです"}, {"h": "しょっぱい", "k": "", "s": "この　おみそしるは　すこし　しょっぱいな"}, {"h": "にっちょく", "k": "", "s": "あしたの　にっちょくは　だれですか"}, {"h": "はっぴょう", "k": "", "s": "みんなの　まえで　はっぴょう　しよう"}, {"h": "びっしょり", "k": "", "s": "あせを　かくと　ふくが　びっしょりする"}, {"h": "へるめっと", "k": "ヘルメット", "s": "じてんしゃに　のるときは　へるめっとを　します"}, {"h": "どっじぼおる", "k": "ドッジボール", "s": "やすみじかんは　どっじぼおるが　やりたい"}, {"h": "ほっとけえき", "k": "ホットケーキ", "s": "ほっとけえきが　じょうずに　やけた"}, {"h": "ほっとどっぐ", "k": "ホットドッグ", "s": "ほっとどっぐに　かぶりついて　たべたいな"}, {"h": "もったいない", "k": "", "s": "きゅうしょくを　のこすのは　もったいない"}, {"h": "たのしかった", "k": "", "s": "ともだちと　あそんで　たのしかった"}, {"h": "うれしかった", "k": "", "s": "ありがとうと　いわれて　うれしかった"}, {"h": "やってきた", "k": "", "s": "ももたろうは　おにがしまに　やってきた"}, {"h": "もってくる", "k": "", "s": "あしたは　ずこうの　ざいりょうを　もってくるんだよ"}, {"h": "せっけん", "k": "", "s": "そとから　かえると　せっけんで　てを　あらいます"}, {"h": "なっとう", "k": "", "s": "ねばねばした　なっとうは　すきですか"}, {"h": "はらっぱ", "k": "", "s": "ひろい　はらっぱで　おべんとうを　たべましょう"}, {"h": "けっこん", "k": "", "s": "しんせきの　けっこんしきに　いきました。"}, {"h": "ほっぺた", "k": "", "s": "おいしすぎて　ほっぺたが　おちそうになる"}, {"h": "おもいっきり", "k": "", "s": "うんどうじょうを　おもいっきり　はしりまわる"}, {"h": "はしった", "k": "", "s": "ろうかを　はしったら　おおけがに　なるかも"}, {"h": "がんばった", "k": "", "s": "ぴかぴかに　なるまで　そうじを　がんばった"}, {"h": "ちからいっぱい", "k": "ゴール", "s": "ごおるまで　ちからいっぱい　はしりぬけた"}];
@@ -67,7 +76,7 @@ const VW=p=>{for(const[v,l]of[['あ','あかがさざただなはばぱまやゃ
 const toHira=k=>{let o='';for(const c of k){const n=c.charCodeAt(0);if(c==='ー')o+=VW(o.slice(-1));else if(n>=0x30A1&&n<=0x30F6)o+=String.fromCharCode(n-0x60);else o+=c}return o};
 const KD={};D.forEach(r=>{if(r.k)KD[toHira(r.k)]=r.k});
 const KRE=new RegExp(Object.keys(KD).sort((a,b)=>b.length-a.length).join('|'),'g');
-const RANKS=[[0,'ひよっこ','🐣'],[300,'みならい','🌱'],[600,'いちにんまえ','⭐'],[900,'たつじん','🏅'],[1200,'めいじん','👑']];
+const RANKS=[[0,'ひよっこ','🐣'],[870,'みならい','🌱'],[1180,'いちにんまえ','⭐'],[1950,'たつじん','🏅'],[3300,'めいじん','👑'],[4500,'おうじゃ','👑']];
 const S={mode:'time',kata:0,ul:1,lh:0},$=id=>document.getElementById(id),sum=a=>a.reduce((x,y)=>x+y,0);
 let Q,deck=[],score,combo,solved,t0,timer,running,busy,drag,fbT;
 const show=id=>document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
@@ -76,7 +85,22 @@ function start(){document.body.classList.toggle('lh',!!S.lh);score=0;combo=0;sol
  const T=S.mode==='time';['barw','tm','sc'].forEach(i=>$(i).style.display=T?'':'none');$('sc').textContent='0てん';$('bar').style.width='100%';
  clearInterval(timer);if(T){t0=performance.now();timer=setInterval(tick,100);tick()}next()}
 function tick(){const r=60-(performance.now()-t0)/1000;$('bar').style.width=Math.max(0,r/.6)+'%';$('tm').textContent=Math.ceil(Math.max(r,0));if(r<=0)finish()}
-function finish(){clearInterval(timer);running=false;let r=RANKS[0];RANKS.forEach(x=>{if(score>=x[0])r=x});$('rs').textContent=score;$('rk').textContent=r[2]+' '+r[1];$('rn').textContent=solved+'もん せいかい';show('res')}
+function finish(){clearInterval(timer);running=false;let ri=0;RANKS.forEach((x,i)=>{if(score>=x[0])ri=i});$('rn').textContent=solved+'もん せいかい';$('rk').textContent='';$('rs').textContent=0;show('res');fly(ri,score)}
+const VEH=[`<svg width='60' height='80' viewBox='0 0 60 80'><ellipse cx='30' cy='26' rx='22' ry='26' fill='#ff6b6b'/><path d='M30 0v52M16 12q14 10 28 0' stroke='#fff' stroke-width='3' fill='none'/><path d='M18 46l8 16M42 46l-8 16' stroke='#6b4e2e' stroke-width='2'/><rect x='24' y='62' width='12' height='10' fill='#a0722f'/></svg>`,
+`<svg width='110' height='56' viewBox='0 0 110 56'><path d='M10 10h60M40 10v8' stroke='#333' stroke-width='4'/><ellipse cx='42' cy='32' rx='30' ry='16' fill='#f59f00'/><path d='M68 28h38l-4 8H68z' fill='#f59f00'/><path d='M98 20l8 8' stroke='#333' stroke-width='4'/><path d='M26 26h20v10H24z' fill='#a5d8ff'/><path d='M22 52h40' stroke='#333' stroke-width='3'/></svg>`,
+`<svg width='130' height='70' viewBox='0 0 130 70'><g fill='#fff'><circle cx='40' cy='42' r='24'/><circle cx='70' cy='30' r='28'/><circle cx='98' cy='44' r='22'/><rect x='40' y='42' width='60' height='24'/></g></svg>`,
+`<svg width='130' height='56' viewBox='0 0 130 56'><ellipse cx='62' cy='28' rx='52' ry='11' fill='#e9ecef'/><path d='M50 28L30 4h14l30 24zM50 28L30 52h14l30-24z' fill='#adb5bd'/><path d='M104 26l18-14v14z' fill='#adb5bd'/><circle cx='96' cy='26' r='3' fill='#339af0'/><circle cx='82' cy='26' r='3' fill='#339af0'/><circle cx='68' cy='26' r='3' fill='#339af0'/></svg>`,
+`<svg width='120' height='120' viewBox='0 0 120 120'><circle cx='60' cy='60' r='34' fill='#f783ac'/><ellipse cx='60' cy='60' rx='56' ry='12' fill='none' stroke='#ffd43b' stroke-width='6' transform='rotate(-20 60 60)'/><circle cx='40' cy='48' r='6' fill='#faa2c1'/></svg>`,
+`<svg width='130' height='130' viewBox='0 0 130 130'><g stroke='#ffd43b' stroke-width='6' stroke-linecap='round'><path d='M65 4v14M65 112v14M4 65h14M112 65h14M22 22l10 10M98 98l10 10M22 108l10-10M98 32l10-10'/></g><circle cx='65' cy='65' r='34' fill='#ffa94d'/><circle cx='65' cy='65' r='26' fill='#ffd43b'/></svg>`];
+function fly(ri,score){
+ const H=$('sky').clientHeight,S=.8*H,w=$('world'),rk=$('rkt'),u=ri+1+(ri<RANKS.length-1?.35*(score-RANKS[ri][0])/(RANKS[ri+1][0]-RANKS[ri][0]):0);
+ w.style.height=(RANKS.length*S+H+40)+'px';w.style.transform='none';
+ w.innerHTML=`<div class='stars'></div><div id='gnd' style='height:${.3*H}px'></div>`+VEH.map((v,k)=>`<div class='veh' style='bottom:${(k+1)*S+.3*H}px'>${v}<b id='vl${k}'>${RANKS[k][1]}</b></div>`).join('');
+ rk.className='go';const T=3600,t0=performance.now();
+ const fin=()=>{$('rs').textContent=score;$('rk').textContent=RANKS[ri][1];$('vl'+ri).classList.add('hit');rk.className=''};
+ const step=n=>{const p=Math.min(1,(n-t0)/T),e=1-Math.pow(1-p,3);w.style.transform='translateY('+u*S*e+'px)';$('rs').textContent=Math.round(score*e);
+  if(!$('res').classList.contains('on'))return;if(p<1)requestAnimationFrame(step);else fin()};
+ requestAnimationFrame(step)}
 const XW=['つかまった','おわった'];
 function build(r,kata){
  const s=r.s.replace(/[。\s　]+$/,'');let a=s.indexOf(r.h),b=a+r.h.length,m;const segs=[];
@@ -126,13 +150,13 @@ function done(){const T=S.mode==='time',t=(performance.now()-Q.t)/1000;let pts=0
  if(T){const sp=Math.max(0,Math.min(100,Math.round((12-t)*10)));
   if(Q.miss){pts=70+Math.round(sp/2);combo=0}else{combo++;pts=100+sp+Math.min(50,(combo-1)*10)}
   score+=pts;$('sc').textContent=score+'てん'}
- solved++;busy=true;fbShow('ok','○',T?'+'+pts:'',T?850:1600);if(!T)speak(Q.text);
- setTimeout(()=>{if(running)next()},T?900:1700)}
-function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
+ solved++;busy=true;const q=Q;let fired=0;const go=()=>{if(fired||!running||Q!==q)return;fired=1;next()};
+ fbShow('ok','○',T?'+'+pts:'',T?850:1000);setTimeout(go,T?900:1000)}
+function speak(t,cb){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.8;if(cb)u.onend=u.onerror=cb;speechSynthesis.speak(u)}catch(e){if(cb)setTimeout(cb,1700)}}
 $('spk').onclick=()=>Q&&speak(Q.text);
 $('skip').onclick=()=>{if(!busy&&running){combo=0;next()}};
 $('quit').onclick=()=>{clearInterval(timer);running=false;try{speechSynthesis.cancel()}catch(e){}show('start')};
 $('b1').onclick=()=>{S.mode='free';start()};$('b2').onclick=()=>{S.mode='time';start()};$('again').onclick=start;
-$('ttl').innerHTML=['ちいさな「っ」は','どこでしょう？'].map(x=>[...x].map((c,i)=>'<span'+(c==='っ'?' class="q"':'')+' style="animation-delay:'+i*.12+'s">'+c+'</span>').join('')).join('<br>');$('home').onclick=()=>show('start');
+$('ttl').innerHTML=['ちいさな「っ」は','どこでしょう？'].map(x=>[...x].map((c,i)=>'<span'+(c==='っ'?' class="q"':'')+' style="animation-delay:'+i*.12+'s">'+c+'</span>').join('')).join('　');$('home').onclick=()=>show('start');
 addEventListener('resize',()=>{if(running&&Q){layout();render()}});
 </script></body></html>
