@@ -77,6 +77,7 @@ const toHira=k=>{let o='';for(const c of k){const n=c.charCodeAt(0);if(c==='ー'
 const KD={};D.forEach(r=>{if(r.k)KD[toHira(r.k)]=r.k});
 const KRE=new RegExp(Object.keys(KD).sort((a,b)=>b.length-a.length).join('|'),'g');
 const RANKS=[[0,'ひよっこ','🐣'],[870,'みならい','🌱'],[1180,'いちにんまえ','⭐'],[1950,'たつじん','🏅'],[3300,'めいじん','👑'],[4500,'おうじゃ','👑']];
+const TH2=[0,360,450,900,1460,2250],thr=i=>S.ul?RANKS[i][0]:TH2[i];
 const S={mode:'time',kata:0,ul:1,lh:0},$=id=>document.getElementById(id),sum=a=>a.reduce((x,y)=>x+y,0);
 let Q,deck=[],score,combo,solved,t0,timer,running,busy,drag,fbT;
 const show=id=>document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));
@@ -85,7 +86,7 @@ function start(){document.body.classList.toggle('lh',!!S.lh);score=0;combo=0;sol
  const T=S.mode==='time';['barw','tm','sc'].forEach(i=>$(i).style.display=T?'':'none');$('sc').textContent='0てん';$('bar').style.width='100%';
  clearInterval(timer);if(T){t0=performance.now();timer=setInterval(tick,100);tick()}next()}
 function tick(){const r=60-(performance.now()-t0)/1000;$('bar').style.width=Math.max(0,r/.6)+'%';$('tm').textContent=Math.ceil(Math.max(r,0));if(r<=0)finish()}
-function finish(){clearInterval(timer);running=false;let ri=0;RANKS.forEach((x,i)=>{if(score>=x[0])ri=i});$('rn').textContent=solved+'もん せいかい';$('rk').textContent='';$('rs').textContent=0;show('res');fly(ri,score)}
+function finish(){clearInterval(timer);running=false;let ri=0;RANKS.forEach((x,i)=>{if(score>=thr(i))ri=i});$('rn').textContent=solved+'もん せいかい';$('rk').textContent='';$('rs').textContent=0;show('res');fly(ri,score)}
 const VEH=[`<svg width='60' height='80' viewBox='0 0 60 80'><ellipse cx='30' cy='26' rx='22' ry='26' fill='#ff6b6b'/><path d='M30 0v52M16 12q14 10 28 0' stroke='#fff' stroke-width='3' fill='none'/><path d='M18 46l8 16M42 46l-8 16' stroke='#6b4e2e' stroke-width='2'/><rect x='24' y='62' width='12' height='10' fill='#a0722f'/></svg>`,
 `<svg width='110' height='56' viewBox='0 0 110 56'><path d='M10 10h60M40 10v8' stroke='#333' stroke-width='4'/><ellipse cx='42' cy='32' rx='30' ry='16' fill='#f59f00'/><path d='M68 28h38l-4 8H68z' fill='#f59f00'/><path d='M98 20l8 8' stroke='#333' stroke-width='4'/><path d='M26 26h20v10H24z' fill='#a5d8ff'/><path d='M22 52h40' stroke='#333' stroke-width='3'/></svg>`,
 `<svg width='130' height='70' viewBox='0 0 130 70'><g fill='#fff'><circle cx='40' cy='42' r='24'/><circle cx='70' cy='30' r='28'/><circle cx='98' cy='44' r='22'/><rect x='40' y='42' width='60' height='24'/></g></svg>`,
@@ -93,7 +94,7 @@ const VEH=[`<svg width='60' height='80' viewBox='0 0 60 80'><ellipse cx='30' cy=
 `<svg width='120' height='120' viewBox='0 0 120 120'><circle cx='60' cy='60' r='34' fill='#f783ac'/><ellipse cx='60' cy='60' rx='56' ry='12' fill='none' stroke='#ffd43b' stroke-width='6' transform='rotate(-20 60 60)'/><circle cx='40' cy='48' r='6' fill='#faa2c1'/></svg>`,
 `<svg width='130' height='130' viewBox='0 0 130 130'><g stroke='#ffd43b' stroke-width='6' stroke-linecap='round'><path d='M65 4v14M65 112v14M4 65h14M112 65h14M22 22l10 10M98 98l10 10M22 108l10-10M98 32l10-10'/></g><circle cx='65' cy='65' r='34' fill='#ffa94d'/><circle cx='65' cy='65' r='26' fill='#ffd43b'/></svg>`];
 function fly(ri,score){
- const H=$('sky').clientHeight,S=.8*H,w=$('world'),rk=$('rkt'),u=ri+1+(ri<RANKS.length-1?.35*(score-RANKS[ri][0])/(RANKS[ri+1][0]-RANKS[ri][0]):0);
+ const H=$('sky').clientHeight,S=.8*H,w=$('world'),rk=$('rkt'),u=ri+1+(ri<RANKS.length-1?.35*(score-thr(ri))/(thr(ri+1)-thr(ri)):0);
  w.style.height=(RANKS.length*S+H+40)+'px';w.style.transform='none';
  w.innerHTML=`<div class='stars'></div><div id='gnd' style='height:${.3*H}px'></div>`+VEH.map((v,k)=>`<div class='veh' style='bottom:${(k+1)*S+.3*H}px'>${v}<b id='vl${k}'>${RANKS[k][1]}</b></div>`).join('');
  rk.className='go';const T=3600,t0=performance.now();
@@ -147,7 +148,7 @@ function place(i,x){if(!running||busy||Q.placed[i])return;
  else{Q.miss++;fbShow('ng','ちがうよ','',1000)}}
 function fbShow(cls,t,sub,ms){const f=$('fb');f.className='on '+cls;f.innerHTML='<div>'+t+'</div>'+(sub?'<small>'+sub+'</small>':'');clearTimeout(fbT);fbT=setTimeout(()=>f.className='',ms)}
 function done(){const T=S.mode==='time',t=(performance.now()-Q.t)/1000;let pts=0;
- if(T){const sp=Math.max(0,Math.min(100,Math.round((12-t)*10)));
+ if(T){const sp=Math.max(0,Math.min(100,Math.round((12-(S.ul?t:t/2))*10)));
   if(Q.miss){pts=70+Math.round(sp/2);combo=0}else{combo++;pts=100+sp+Math.min(50,(combo-1)*10)}
   score+=pts;$('sc').textContent=score+'てん'}
  solved++;busy=true;const q=Q;let fired=0;const go=()=>{if(fired||!running||Q!==q)return;fired=1;next()};
